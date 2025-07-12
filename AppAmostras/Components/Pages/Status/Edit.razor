@@ -1,0 +1,90 @@
+﻿@page "/status/edit/{id:int}"
+@using AppAmostras.Data
+@using AppAmostras.Models
+@using AppAmostras.Repositories
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext Db
+@inject NavigationManager Navigation
+@inject IStatusRepository StatusRepository
+@attribute [StreamRendering(true)]
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<Modal @ref="modal" Title="Modal title">
+    <BodyTemplate>
+        Já existe uma amostra com o código informado.
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModal">Fechar</Button>
+    </FooterTemplate>
+</Modal>
+
+@if (status is null)
+{
+    <p class="text-center">
+        <em>Status não encontrado</em>
+    </p>
+}
+else
+{
+    <h4>Editar Registro</h4>
+    <hr />
+    <EditForm Model="@status" OnValidSubmit="OnValidSubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Descrição</label>
+            <InputText @bind-Value="@status.Descricao" class="form-control" required />            
+        </div>
+      
+        <div>
+            <button type="submit" class="btn btn-primary">Atualizar</button>
+            <a href="@($"/status")" class="btn btn-light">Cancelar</a>
+        </div>
+    </EditForm>
+    <hr />
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    public Status? status { get; set; }
+    private Modal modal;
+
+    protected override async Task OnInitializedAsync()
+    {       
+        status = await Db.Status.FirstOrDefaultAsync(s => s.Id == Id);
+        if (status is null)
+        {
+            Navigation.NavigateTo("notfound");
+        }
+        status.DescricaoSalvo = status.Descricao; // Save the original description for comparison
+    }
+
+    public async Task OnValidSubmitAsync()
+    {        
+        bool amostraExiste = Db.Status.Any(a => a.Descricao.Equals(status.Descricao));
+
+        if (amostraExiste && (status.Descricao != status.DescricaoSalvo))
+        {
+            OnShowModal();
+        }
+        else
+        {
+            await StatusRepository.UpdateAsync(status);           
+            Navigation.NavigateTo("status");
+        }      
+    }
+
+    private async Task OnShowModal()
+    {
+        await modal?.ShowAsync();
+    }
+
+    private async Task OnHideModal()
+    {
+        await modal?.HideAsync();
+    }
+}

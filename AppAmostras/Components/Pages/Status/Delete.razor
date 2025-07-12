@@ -1,0 +1,52 @@
+﻿@page "/status/delete/{id:int}"
+@using AppAmostras.Data
+@using AppAmostras.Models
+@using AppAmostras.Repositories
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext Db
+@inject NavigationManager Navigation
+@inject IStatusRepository StatusRepository
+@rendermode InteractiveServer
+@attribute [Authorize]
+@if (status is null)
+{
+    <p class="text-center">
+        <em>Status não encontrado</em>
+    </p>
+}
+else
+{
+    <h4>Excluir Registro</h4>
+    <hr />
+    <p>Confirma a exclusão do registro?</p>
+    <EditForm Model="@status" OnValidSubmit="OnValidSubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <button type="submit" class="btn btn-danger">Excluir</button>
+        <a href="/status" class="btn btn-light">Cancelar</a>
+    </EditForm>
+    <hr />
+}
+@code {
+    
+    public Status? status { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }   
+
+    protected override async Task OnInitializedAsync()
+    {
+        status = await Db.Status.FirstOrDefaultAsync(s => s.Id == Id);
+        if (status is null)
+        {
+            Navigation.NavigateTo("notfound");
+        }
+    }
+    public async Task OnValidSubmitAsync()
+    {
+        await StatusRepository.DeleteAsync(status);       
+        Navigation.NavigateTo("status");
+    }
+}
+

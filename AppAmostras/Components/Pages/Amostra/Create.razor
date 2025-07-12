@@ -1,0 +1,95 @@
+﻿@page "/amostras/create"  
+@using AppAmostras.Data  
+@using AppAmostras.Repositories
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore  
+@using AppAmostras.Models  
+@inject ApplicationDbContext Db  
+@inject NavigationManager Navigation  
+@inject IAmostraRepository AmostraRepository
+@attribute [Authorize]
+@rendermode InteractiveServer  
+<PageTitle>Novo Registro</PageTitle>  
+
+<Modal @ref="modal" Title="Modal title">
+    <BodyTemplate>
+        Já existe uma amostra com o código informado.
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModal">Fechar</Button>      
+    </FooterTemplate>
+</Modal>
+
+<h4>Novo Registro</h4>  
+<hr />
+<div class="row">  
+    <div class="col-md-4">  
+        <EditForm Model="@amostra" OnValidSubmit="OnValidSubmitAsync" FormName="create" Enhance>
+            <DataAnnotationsValidator />  
+            <ValidationSummary class="text-danger" role="alert" />  
+            <div class="mb-3">  
+                <label class="form-label">Código da Amostra:</label>  
+                <InputText id="descricao" @bind-Value="amostra.Codigo" class="form-control" aria-required="true" style="text-transform:uppercase" required />
+            </div>  
+            <div class="mb-3">  
+                <label class="form-label">Descrição:</label>  
+                <InputText id="descricao" @bind-Value="amostra.Descricao" class="form-control" aria-required="true" required />
+            </div>  
+            <div class="mb-3">  
+                <label class="form-label">Data Recebimento:</label>  
+                <InputDate id="datarecebimento" @bind-Value="amostra.DataRecebimento" @bind-Value:format="dd-MM-yyyy" class="form-control" />
+            </div>  
+
+            <div class="mb-3">  
+                <label class="form-label">Status:</label>  
+                <InputSelect @bind-Value="amostra.StatusId" class="form-control" required>
+                    <option></option>  
+                    @foreach (var status in Status)  
+                    {  
+                        <option value="@status.Id">@status.Descricao</option>  
+                    }  
+                </InputSelect>  
+                <ValidationMessage For="() => amostra.StatusId" class="text-danger" />
+            </div>  
+            <button type="submit" class="btn btn-primary">Salvar</button>  
+            <a href="/amostras" class="btn btn-light">Cancelar</a>  
+        </EditForm>  
+    </div>  
+</div>  
+<hr />  
+@code {  
+    public Amostra amostra { get; set; } = new();  
+    public IEnumerable<Status> Status { get; set; } = Enumerable.Empty<Status>();  
+    private Modal modal;
+
+    protected override async Task OnInitializedAsync()  
+    {  
+        Status = await Db.Status.OrderBy(s => s.Descricao).ToListAsync();  
+    }  
+
+    public async Task OnValidSubmitAsync()  
+    {  
+        bool amostraExiste = Db.Amostras.Any(a => a.Codigo.Equals(amostra.Codigo));
+        if (amostraExiste)  
+        {             
+            OnShowModal(); 
+        }  
+        else  
+        {  
+            amostra.DataRecebimento = amostra.DataRecebimento.Date; 
+            AmostraRepository.CreateAsync(amostra);
+            Navigation.NavigateTo("amostras");
+        }  
+    }
+    
+    private async Task OnShowModal()
+    {
+        await modal?.ShowAsync();
+    }
+
+    private async Task OnHideModal()
+    {
+        await modal?.HideAsync();
+    }
+    
+}

@@ -1,0 +1,51 @@
+﻿@page "/amostras/details/{id:int}"
+@using AppAmostras.Data
+@using AppAmostras.Models
+@using AppAmostras.Repositories
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext Db
+@inject NavigationManager NavigationManager
+@inject IAmostraRepository AmostraRepository
+@attribute [Authorize]
+<PageTitle>Detalhar</PageTitle>
+<h4>Detalhes do Registro</h4>
+<hr />
+<div>
+    @if (amostra is null)
+    {
+        <p><em>Carregando...</em></p>
+    }
+    else
+    {        
+        <dl class="row">
+            <dt class="col-sm-2">Cõdigo da Amostra</dt>
+            <dd class="col-sm-10">@amostra.Codigo</dd>
+            <dt class="col-sm-2">Descricao</dt>
+            <dd class="col-sm-10">@amostra.Descricao</dd>
+            <dt class="col-sm-2">DataRecebimento</dt>
+            <dd class="col-sm-10">@amostra.DataRecebimento</dd>
+            <dt class="col-sm-2">Status</dt>
+            <dd class="col-sm-10">@amostra.Status.Descricao</dd>
+        </dl>
+        <div>            
+            <a href="@($"/amostras")" class="btn btn-light">Voltar</a>
+        </div>
+    }
+</div>
+<hr />
+@code {
+    private Amostra? amostra;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        amostra = await AmostraRepository.GetIdAsync(Id);        
+        if (amostra is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

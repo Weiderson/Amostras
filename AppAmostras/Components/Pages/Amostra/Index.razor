@@ -1,0 +1,73 @@
+﻿@page "/amostras"
+@using AppAmostras.Repositories
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using AppAmostras.Models
+@using AppAmostras.Data
+@inject NavigationManager Navigation
+@inject ApplicationDbContext Db
+@inject IAmostraRepository AmostraRepository
+@attribute [StreamRendering(true)]
+@rendermode InteractiveServer
+@attribute [Authorize]
+<PageTitle>Lista de Amostras</PageTitle>
+<p>
+    <a href="amostras/create">Novo Registro</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Código da Amostra</th>
+            <th>Descrição</th>
+            <th>Data Recebimento</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in listaAmostras)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>                    
+                    <a href="/amostras/details/@item.Id">
+                        @item.Codigo
+                    </a>
+                </td>
+                <td>
+                        @item.Descricao
+                </td>
+                <td>
+                    @item.DataRecebimento.ToString("dd/MM/yyyy")
+                </td>
+
+                <td>
+                    @item.Status?.Descricao
+                </td>
+
+                <td align="right">
+                    <a href="/amostras/edit/@item.Id" class="btn btn-light">
+                        Editar
+                    </a>
+                    &nbsp;&nbsp;
+                    <a href="/amostras/delete/@item.Id" class="btn btn-light">
+                        Excluir
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    public IEnumerable<Amostra> listaAmostras { get; set; } = Enumerable.Empty<Amostra>();
+    protected override async Task OnInitializedAsync()
+    {        
+        listaAmostras = await AmostraRepository.GetAllAsync();
+        if (listaAmostras is null)
+        {
+            Navigation.NavigateTo("notfound");
+        }
+    }
+}

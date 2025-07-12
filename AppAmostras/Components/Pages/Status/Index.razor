@@ -1,0 +1,57 @@
+﻿@page "/status"
+@using AppAmostras.Repositories
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using AppAmostras.Models
+@using AppAmostras.Data
+@inject NavigationManager Navigation
+@inject ApplicationDbContext Db
+@attribute [StreamRendering(true)]
+@rendermode InteractiveServer
+@inject IStatusRepository StatusRepository
+@attribute [Authorize]
+<PageTitle>Lista de status</PageTitle>
+<p>
+    <a href="status/create">Novo Registro</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Descrição</th>          
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in listaStatus)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>
+                    <a href="/status/details/@item.Id">
+                        @item.Descricao
+                    </a>
+                </td>
+                <td align="right">
+                    <a href="/status/edit/@item.Id" class="btn btn-light">Editar</a>
+                    &nbsp;&nbsp;
+                    <a href="/status/delete/@item.Id" class="btn btn-light">Excluir</a>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    public IEnumerable<Status> listaStatus { get; set; } = Enumerable.Empty<Status>();
+    protected override async Task OnInitializedAsync()
+    {
+       
+        listaStatus = await StatusRepository.GetAllAsync();
+        if (listaStatus is null)
+        {
+            Navigation.NavigateTo("notfound");
+        }
+    }
+}

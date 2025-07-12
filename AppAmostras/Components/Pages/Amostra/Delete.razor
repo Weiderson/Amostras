@@ -1,0 +1,53 @@
+﻿@page "/amostras/delete/{id:int}"
+@using AppAmostras.Data
+@using AppAmostras.Models
+@using AppAmostras.Repositories
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext Db
+@inject NavigationManager Navigation
+@inject IAmostraRepository AmostraRepository
+@rendermode InteractiveServer
+@attribute [Authorize]
+@if (amostra is null)
+{
+    <p class="text-center">
+        <em>Amostra não encontrado</em>
+    </p>
+}
+else
+{
+    <h4>Excluir Registro</h4>
+    <hr />
+    <p>Confirma a exclusão do registro?</p>
+    <EditForm Model="@amostra" OnValidSubmit="OnValidSubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <button type="submit" class="btn btn-danger">Excluir</button>
+        <a href="/amostras" class="btn btn-light">Cancelar</a>
+    </EditForm>
+    <hr />
+}
+@code {
+
+    public Amostra? amostra { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        amostra = await Db.Amostras.AsNoTracking().FirstOrDefaultAsync(s => s.Id == Id);
+        if (amostra is null)
+        {
+            Navigation.NavigateTo("notfound");
+        }
+    }
+
+    public async Task OnValidSubmitAsync()
+    {
+        AmostraRepository.DeleteAsync(amostra!);
+        Navigation.NavigateTo("amostras");
+    }
+}
+

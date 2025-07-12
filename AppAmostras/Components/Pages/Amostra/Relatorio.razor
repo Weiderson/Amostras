@@ -1,0 +1,132 @@
+﻿@page "/amostras/relatorio"
+@inject IAmostraRepository AmostraRepository
+@inject IArquivoService ArquivoService
+@inject ApplicationDbContext Db
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@using AppAmostras.Repositories
+@using AppAmostras.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.EntityFrameworkCore
+@using AppAmostras.Models
+@using AppAmostras.Data
+@using System.Text
+@attribute [Authorize]
+
+@attribute [StreamRendering(true)]
+
+<PageTitle>Lista de Amostras</PageTitle>
+
+<table width="100%" cellspacing="0">
+    <tr>
+        <td style="width:43%;">
+            <button class="form-control btn btn-light" @onclick="ResutautrarLista">Exibe Lista de Amostras</button>
+        </td>
+        <td style="width:43%;">
+            <button class="form-control btn btn-light" @onclick="ResutautrarLista30">Exibe Lista de Amostras Finalizadas (30 dias)</button>
+        </td>
+        <td style="width:16%;">
+            <button class="form-control btn btn-secondary" @onclick="ExportToHtml">Baixar Relatório</button>
+        </td>
+    </tr>
+</table>
+<br />
+<div class="">
+    <input class="form-control" type="text" placeholder="Filtrar..."
+           @bind="filtro"
+           @bind:event="oninput">
+</div>
+<br />
+<div @ref=Conteudo>
+    <table class="table" style="width:100%;">
+        <thead>
+            <tr>
+                <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Id</th>
+                <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Código da Amostra</th>
+                <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Descrição</th>
+                <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Data Recebimento</th>
+                <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Status</th>                    
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in amostras)
+            {
+                if (!IsVisible(item))
+                    continue;
+                <tr>
+                    <td style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left;">@item.Id</td>
+                    <td style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left;">@item.Codigo</td>
+                    <td style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left;">@item.Descricao</td>
+                    <td style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left;">@item.DataRecebimento.ToString("dd/MM/yyyy")</td>
+                    <td style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left;">@item.Status?.Descricao</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    public IEnumerable<Amostra> amostras { get; set; } = Enumerable.Empty<Amostra>();
+    public string filtro { get; set; }
+    ElementReference Conteudo;
+    private IJSObjectReference? module;
+
+    protected override async Task OnInitializedAsync()
+    {
+        amostras = await Db.Amostras.Where(d => d.DataRecebimento > DateTime.Now.Date.AddDays(-30)).Include(x => x.Status).OrderBy(o1 => o1.Codigo).ThenBy(o2 => o2.DataRecebimento).ToListAsync();
+        amostras = amostras.Where(s => s.Status.Descricao == "Finalizada");
+        if (amostras is null)
+        {
+            Navigation.NavigateTo("notfound");
+        }
+    }
+
+    public bool IsVisible(Amostra amostra)
+    {
+        if (string.IsNullOrEmpty(filtro))
+            return true;
+
+        if (amostra.Codigo.Contains(filtro, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (amostra.Descricao.Contains(filtro, StringComparison.OrdinalIgnoreCase))
+            return true;      
+
+        if (amostra.DataRecebimento.ToString("dd/MM/yyyy").StartsWith(filtro))
+            return true;
+
+        if (amostra.Status?.Descricao.Contains(filtro, StringComparison.OrdinalIgnoreCase) == true)
+            return true;
+
+        return false;
+    }
+
+    public async void ResutautrarLista()
+    {       
+        amostras = Enumerable.Empty<Amostra>();
+        amostras = await AmostraRepository.GetAllAsync();
+        StateHasChanged();
+    }
+
+    public async void ResutautrarLista30()
+    {
+        amostras = Enumerable.Empty<Amostra>();
+        amostras = await AmostraRepository.GetAllAsync30();
+        amostras = amostras.Where(s => s.Status.Descricao == "Finalizada");
+        StateHasChanged();
+    }    
+
+    private async Task ExportToHtml()
+    {
+        string html = await JSRuntime.InvokeAsync<string>("Elemento.getInnerHTML", Conteudo);
+        StringBuilder sb = new StringBuilder("<h4>Relatório de Amostras</h4>");
+        sb.Append("<hr />");
+        sb.Append(html);
+        string htmlfinal = sb.ToString();
+        var bytes = await ArquivoService.GetBytes(htmlfinal);
+        using var stream = new MemoryStream(bytes);       
+        var streamRef = new DotNetStreamReference(stream);        
+        await JSRuntime.InvokeVoidAsync("downloadFileFromStream", "RelatorioAmostras.html", streamRef);        
+    }
+}
