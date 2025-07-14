@@ -23,7 +23,7 @@ namespace AppAmostras.Repositories
         public async Task<IEnumerable<Amostra>> GetAllAsync30()
         {
             IEnumerable<Amostra> amostras = Enumerable.Empty<Amostra>();
-            amostras = await _Db.Amostras.Where(d => d.DataRecebimento > DateTime.Now.Date.AddDays(-30)).Include(x => x.Status).OrderBy(o1 => o1.Codigo).ThenBy(o2 => o2.DataRecebimento).ToListAsync();
+            amostras = await _Db.Amostras.Where(d => d.DataRecebimento > DateTime.Now.Date.AddDays(-30) && d.DataRecebimento < DateTime.Now.Date.AddDays(1)).Include(x => x.Status).OrderBy(o1 => o1.Codigo).ThenBy(o2 => o2.DataRecebimento).ToListAsync();
             return amostras;
         }
 

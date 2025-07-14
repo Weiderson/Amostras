@@ -46,7 +46,7 @@
                 <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Código da Amostra</th>
                 <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Descrição</th>
                 <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Data Recebimento</th>
-                <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Status</th>                    
+                <th style=" border: 1px groove #f0f2f0; padding: 1px; text-align: left; background-color: #f2f2f2;">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -92,7 +92,7 @@
             return true;
 
         if (amostra.Descricao.Contains(filtro, StringComparison.OrdinalIgnoreCase))
-            return true;      
+            return true;
 
         if (amostra.DataRecebimento.ToString("dd/MM/yyyy").StartsWith(filtro))
             return true;
@@ -103,31 +103,36 @@
         return false;
     }
 
+    // Carrega a lista de amostras
     public async void ResutautrarLista()
-    {       
+    {
         amostras = Enumerable.Empty<Amostra>();
         amostras = await AmostraRepository.GetAllAsync();
         StateHasChanged();
     }
 
+    // Carrega a lista de amostras dos últimos 30 dias com status "Finalizada"
     public async void ResutautrarLista30()
     {
         amostras = Enumerable.Empty<Amostra>();
         amostras = await AmostraRepository.GetAllAsync30();
-        amostras = amostras.Where(s => s.Status.Descricao == "Finalizada");
+        amostras = amostras.Where(s => s.Status.Descricao.ToUpper() == "FINALIZADA");
         StateHasChanged();
-    }    
-
+    }
+    
+    // Exporta o relatório de amostras para HTML
     private async Task ExportToHtml()
     {
+        // Certifique-se de que o módulo JS esteja carregado
         string html = await JSRuntime.InvokeAsync<string>("Elemento.getInnerHTML", Conteudo);
         StringBuilder sb = new StringBuilder("<h4>Relatório de Amostras</h4>");
         sb.Append("<hr />");
         sb.Append(html);
         string htmlfinal = sb.ToString();
         var bytes = await ArquivoService.GetBytes(htmlfinal);
-        using var stream = new MemoryStream(bytes);       
-        var streamRef = new DotNetStreamReference(stream);        
-        await JSRuntime.InvokeVoidAsync("downloadFileFromStream", "RelatorioAmostras.html", streamRef);        
+        using var stream = new MemoryStream(bytes);
+        var streamRef = new DotNetStreamReference(stream);
+        // Chama a função JavaScript para baixar o arquivo (Em App.razor)
+        await JSRuntime.InvokeVoidAsync("downloadFileFromStream", "RelatorioAmostras.html", streamRef);
     }
 }

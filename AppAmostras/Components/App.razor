@@ -14,12 +14,13 @@
     <HeadOutlet @rendermode="RenderModeForPage" />
 
     <script>      
-
+        // Este script é usado para garantir que o aplicativo Blazor possa acessar o innerHTML dos elementos.
              var Elemento = Elemento || {};
              Elemento.getInnerHTML = function(element) {
              return element.innerHTML;
         };        
 
+        // Esta função é usada para baixar um arquivo de uma referência de fluxo.
              window.downloadFileFromStream = async (fileName, contentStreamReference) => {
             const arrayBuffer = await contentStreamReference.arrayBuffer();
             const blob = new Blob([arrayBuffer]);
