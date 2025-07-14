@@ -1,5 +1,9 @@
 # Aplicativo de Amostras Blazor 8 + API de Amostras .Net 8 + Aplicativo de Testes
 
+<img width="1655" height="937" alt="Amostras" src="https://github.com/user-attachments/assets/ca347ff0-9b7f-457c-b944-43e8ab8b8bca" />
+<img width="1651" height="931" alt="Status" src="https://github.com/user-attachments/assets/9a3cd8b2-f251-466c-9146-baf2d062c484" />
+<img width="1713" height="1001" alt="Api" src="https://github.com/user-attachments/assets/52cd6540-c66e-407e-9426-5de533fab0a5" />
+
 ### RECURSOS
 + DTOs
 + Repository+ 
