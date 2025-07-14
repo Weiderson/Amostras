@@ -5,11 +5,11 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext Db
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 @inject IAmostraRepository AmostraRepository
+@attribute [StreamRendering(true)]
 @rendermode InteractiveServer
 @attribute [Authorize]
-
 
 <Modal @ref="modal" Title="Modal title">
     <BodyTemplate>
@@ -44,7 +44,7 @@ else
         </div>
         <div class="mb-3">
             <label class="form-label">Data Recebimento:</label>
-            <InputDate id="datarecebimento" @bind-Value="amostra.DataRecebimento" @bind-Value:format="dd-MM-yyyy" class="form-control" />
+            <InputDate @bind-Value="amostra.DataRecebimento" class="form-control" autofocus />
         </div>
         <div class="mb-3">
             <label class="form-label">Status:</label>
@@ -73,12 +73,13 @@ else
     public IEnumerable<Status> listastatus { get; set; } = Enumerable.Empty<Status>();
     private Modal modal;
 
+
     protected override async Task OnInitializedAsync()
     {
-        amostra = await Db.Amostras.FirstOrDefaultAsync(f => f.Id == Id) ?? new();
+        amostra = await Db.Amostras.FirstOrDefaultAsync(f => f.Id == Id);
         if (amostra is null)
         {
-            Navigation.NavigateTo("notfound");
+            NavigationManager.NavigateTo("notfound");
         }
         amostra.CodigoSalvo = amostra.Codigo;
         listastatus = await Db.Status.OrderBy(s => s.Descricao).ToListAsync();    
@@ -88,6 +89,7 @@ else
     {
         bool amostraExiste = Db.Amostras.Any(a => a.Codigo.Equals(amostra.Codigo));
 
+        // Verifica se a amostra já existe e se o código foi alterado
         if (amostraExiste && (amostra.Codigo != amostra.CodigoSalvo))
         {
             OnShowModal();
@@ -95,7 +97,7 @@ else
         else
         {
             AmostraRepository.UpdateAsync(amostra);           
-            Navigation.NavigateTo("amostras");
+            NavigationManager.NavigateTo("amostras");
         }
     }
 

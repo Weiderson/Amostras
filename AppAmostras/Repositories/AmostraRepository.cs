@@ -1,7 +1,7 @@
 ﻿using AppAmostras.Data;
 using AppAmostras.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 
 namespace AppAmostras.Repositories
 {            
@@ -46,6 +46,9 @@ namespace AppAmostras.Repositories
             
         public async Task DeleteAsync(Amostra amostra)
         {
+            //_Db.Amostras.Attach(amostra);
+            //_Db.Entry(amostra).State = EntityState.Deleted;
+            
             _Db.Amostras.Remove(amostra);
             await _Db.SaveChangesAsync();
         }

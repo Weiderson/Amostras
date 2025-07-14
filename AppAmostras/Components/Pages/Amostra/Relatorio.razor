@@ -3,7 +3,7 @@
 @inject IArquivoService ArquivoService
 @inject ApplicationDbContext Db
 @inject IJSRuntime JSRuntime
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 @using AppAmostras.Repositories
 @using AppAmostras.Services
 @using Microsoft.AspNetCore.Authorization
@@ -74,11 +74,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        amostras = await Db.Amostras.Where(d => d.DataRecebimento > DateTime.Now.Date.AddDays(-30)).Include(x => x.Status).OrderBy(o1 => o1.Codigo).ThenBy(o2 => o2.DataRecebimento).ToListAsync();
-        amostras = amostras.Where(s => s.Status.Descricao == "Finalizada");
+        // Carrega a lista de amostras dos 30 ultimos dias com status "Finalizada"
+        amostras = await Db.Amostras.Where(d => d.DataRecebimento > DateTime.Now.Date.AddDays(-30) && d.DataRecebimento < DateTime.Now.Date.AddDays(1)).Include(x => x.Status).OrderBy(o1 => o1.Codigo).ThenBy(o2 => o2.DataRecebimento).ToListAsync();
+        amostras = amostras.Where(s => s.Status.Descricao.ToUpper() == "FINALIZADA");
         if (amostras is null)
         {
-            Navigation.NavigateTo("notfound");
+            NavigationManager.NavigateTo("notfound");
         }
     }
 

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApiAmostras.Controllers.v1
 {
     [ApiController]
-    //[Route("api/v{version:apiVersion}/Account")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     public class UsuarioContaController : ControllerBase

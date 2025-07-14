@@ -31,7 +31,7 @@ namespace AppAmostras.Repositories
         }
         public async Task DeleteAsync(Status status)
         {
-            _Db.Status.Remove(status!);
+            _Db.Status.Remove(status);
             await _Db.SaveChangesAsync();
         }
     }

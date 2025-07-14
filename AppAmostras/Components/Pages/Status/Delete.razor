@@ -5,9 +5,8 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext Db
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 @inject IStatusRepository StatusRepository
-@rendermode InteractiveServer
 @attribute [Authorize]
 @if (status is null)
 {
@@ -40,13 +39,13 @@ else
         status = await Db.Status.FirstOrDefaultAsync(s => s.Id == Id);
         if (status is null)
         {
-            Navigation.NavigateTo("notfound");
+            NavigationManager.NavigateTo("notfound");
         }
     }
     public async Task OnValidSubmitAsync()
     {
         await StatusRepository.DeleteAsync(status);       
-        Navigation.NavigateTo("status");
+        NavigationManager.NavigateTo("status");
     }
 }
 

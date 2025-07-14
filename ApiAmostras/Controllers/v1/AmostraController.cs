@@ -11,7 +11,7 @@ namespace ApiAmostras.Controllers.v1
     [ApiController]
     [Route("api/v{version:apiVersion}/Amostra")]
     [ApiVersion("1.0")]
-    //[Authorize]
+    [Authorize]
     public class AmostraController : ControllerBase
     {
         private readonly IAmostraRepository _repository;

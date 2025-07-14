@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext Db
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 @inject IStatusRepository StatusRepository
 @attribute [StreamRendering(true)]
 @rendermode InteractiveServer
@@ -58,7 +58,7 @@ else
         status = await Db.Status.FirstOrDefaultAsync(s => s.Id == Id);
         if (status is null)
         {
-            Navigation.NavigateTo("notfound");
+            NavigationManager.NavigateTo("notfound");
         }
         status.DescricaoSalvo = status.Descricao; // Save the original description for comparison
     }
@@ -74,7 +74,7 @@ else
         else
         {
             await StatusRepository.UpdateAsync(status);           
-            Navigation.NavigateTo("status");
+            NavigationManager.NavigateTo("status");
         }      
     }
 

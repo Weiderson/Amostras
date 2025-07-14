@@ -5,7 +5,7 @@ namespace AppAmostras.Models
 {
     [Table("Status")]
     public class Status
-    {
+    {       
         [Key]
         public int Id { get; set; }
              
@@ -15,5 +15,7 @@ namespace AppAmostras.Models
 
         [NotMapped]
         public string DescricaoSalvo { get; set; }
+
+        public IEnumerable<Amostra> Amostras { get; set; } = new List<Amostra>();
     }
 }

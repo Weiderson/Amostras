@@ -4,7 +4,7 @@
 @using AppAmostras.Repositories
 @using Microsoft.AspNetCore.Authorization
 @inject ApplicationDbContext Db
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 @inject IStatusRepository StatusRepository
 @attribute [Authorize]
@@ -50,7 +50,7 @@
         else
         {
             await StatusRepository.CreateAsync(status);
-            Navigation.NavigateTo("status");
+            NavigationManager.NavigateTo("status");
         }
     }
 

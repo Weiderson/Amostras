@@ -11,7 +11,7 @@ namespace ApiStatus.Controllers.v1
     [ApiController]
     [Route("api/v{version:apiVersion}/Status")]
     [ApiVersion("1.0")]
-    //[Authorize]
+    [Authorize]
     public class StatusController : ControllerBase
     {
         private readonly IStatusRepository _repository;

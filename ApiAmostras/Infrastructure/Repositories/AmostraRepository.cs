@@ -45,7 +45,7 @@ namespace ApiAmostras.Infrastructure.Repositories
         {          
 
             var existeAmostra = await GetIdAsync(amostra.Id);
-            // Verifica se o status existe
+            // Verifica se a amostra existe
             if (existeAmostra != null)
             {
                 var existeStatus = _Db.Status.Find(amostra.StatusId);

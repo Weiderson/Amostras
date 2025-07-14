@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppAmostras.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250712004634_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250714000529_New")]
+    partial class New
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -274,7 +274,7 @@ namespace AppAmostras.Migrations
             modelBuilder.Entity("AppAmostras.Models.Amostra", b =>
                 {
                     b.HasOne("AppAmostras.Models.Status", "Status")
-                        .WithMany()
+                        .WithMany("Amostras")
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -331,6 +331,11 @@ namespace AppAmostras.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AppAmostras.Models.Status", b =>
+                {
+                    b.Navigation("Amostras");
                 });
 #pragma warning restore 612, 618
         }

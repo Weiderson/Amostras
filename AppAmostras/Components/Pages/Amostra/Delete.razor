@@ -5,9 +5,8 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext Db
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 @inject IAmostraRepository AmostraRepository
-@rendermode InteractiveServer
 @attribute [Authorize]
 @if (amostra is null)
 {
@@ -37,17 +36,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        amostra = await Db.Amostras.AsNoTracking().FirstOrDefaultAsync(s => s.Id == Id);
+        amostra = await Db.Amostras.FirstOrDefaultAsync(s => s.Id == Id);
         if (amostra is null)
         {
-            Navigation.NavigateTo("notfound");
+            NavigationManager.NavigateTo("notfound");
         }
     }
 
     public async Task OnValidSubmitAsync()
-    {
-        AmostraRepository.DeleteAsync(amostra!);
-        Navigation.NavigateTo("amostras");
+    {        
+        AmostraRepository.DeleteAsync(amostra);
+        NavigationManager.NavigateTo("amostras");
     }
 }
 

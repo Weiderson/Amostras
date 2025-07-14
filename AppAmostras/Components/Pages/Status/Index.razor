@@ -4,15 +4,14 @@
 @using Microsoft.EntityFrameworkCore
 @using AppAmostras.Models
 @using AppAmostras.Data
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 @inject ApplicationDbContext Db
-@attribute [StreamRendering(true)]
 @rendermode InteractiveServer
 @inject IStatusRepository StatusRepository
 @attribute [Authorize]
 <PageTitle>Lista de status</PageTitle>
 <p>
-    <a href="status/create">Novo Registro</a>
+    <a href="status/create" class="btn btn-light">Novo Registro</a>
 </p>
 <table class="table">
     <thead>
@@ -51,7 +50,7 @@
         listaStatus = await StatusRepository.GetAllAsync();
         if (listaStatus is null)
         {
-            Navigation.NavigateTo("notfound");
+            NavigationManager.NavigateTo("notfound");
         }
     }
 }

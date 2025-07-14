@@ -15,14 +15,23 @@
 + Swagger
 + JWT
 + XUNIT
-+ SQL Server
++ SQL Server 2022
 + Visual Studio 2022
 
 ### INFORMAÇÕES GERAIS
 + Atentar para uso corretor do token de autenticação. (usar a palavra Bearer + token)
++ Antentar para o nome do status "FINALIZADA" na qual a consulta padrão está setadda.
++ O comportamento de exclusão está configurado para: em cascata.
 
 ### COMANDO PARA EF MIGRATIONS
 + Executar na APP para criar a estrutura de dados
+
+### SCRIPTS SQL
++ Dentro da Pasta Script da AppAmostras
+
+### USUÁRIO DE TESTE PARA ACESSO
++ Login: teste1@teste.com
++ Senha: Teste789@
 
 ### RELATÓRIO
 + Global (Com unico campo para filtrar todas as colunas)

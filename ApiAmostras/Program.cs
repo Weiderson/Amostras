@@ -1,4 +1,4 @@
-﻿using ApiAmostras.Configure.Swagger;
+﻿using ApiAmostras.Application.Swagger;
 using ApiAmostras.Domain.Interfaces;
 using ApiAmostras.Infrastructure;
 using ApiAmostras.Infrastructure.Repositories;
@@ -16,11 +16,8 @@ using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddApiVersioning(options =>
 {
     options.ReportApiVersions = true;
@@ -32,10 +29,8 @@ builder.Services.AddApiVersioning(options =>
     options.GroupNameFormat = "'v'VVV";
     options.SubstituteApiVersionInUrl = true;
 });
-
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddSwaggerGen(options =>
 {
     options.OperationFilter<SwaggerDefaultValues>();
@@ -43,7 +38,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerGenOptions>();
 builder.Services.AddSwaggerJWT();
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "MyPolicy",
@@ -54,23 +48,17 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
         });
 });
-
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
        .AddEntityFrameworkStores<ApplicationDbContext>()
        .AddDefaultTokenProviders();
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddScoped<IAmostraRepository, AmostraRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 builder.Services.AddScoped<IUsuarioContaRepository, UsuarioContaRepository>();
-
 builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-
 builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -90,8 +78,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
-
-
 var versionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
@@ -101,11 +87,10 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
         foreach (var description in versionDescriptionProvider.ApiVersionDescriptions)
         {
             options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
-                $"Desafio Back-End APi - {description.GroupName.ToUpper()}");
+                $"ApiAmostras - {description.GroupName.ToUpper()}");
         }
     });
 }
-
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();

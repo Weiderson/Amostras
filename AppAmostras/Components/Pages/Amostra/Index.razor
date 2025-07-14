@@ -4,15 +4,15 @@
 @using Microsoft.EntityFrameworkCore
 @using AppAmostras.Models
 @using AppAmostras.Data
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 @inject ApplicationDbContext Db
 @inject IAmostraRepository AmostraRepository
-@attribute [StreamRendering(true)]
+
 @rendermode InteractiveServer
 @attribute [Authorize]
 <PageTitle>Lista de Amostras</PageTitle>
 <p>
-    <a href="amostras/create">Novo Registro</a>
+    <a href="amostras/create" class="btn btn-light">Novo Registro</a>
 </p>
 <table class="table">
     <thead>
@@ -67,7 +67,7 @@
         listaAmostras = await AmostraRepository.GetAllAsync();
         if (listaAmostras is null)
         {
-            Navigation.NavigateTo("notfound");
+            NavigationManager.NavigateTo("notfound");
         }
     }
 }
