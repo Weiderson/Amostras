@@ -17,13 +17,7 @@ namespace AppAmostras.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); 
-
-            modelBuilder.Entity<Amostra>()
-                .HasOne(p => p.Status)
-                .WithMany(c => c.Amostras)
-                .HasForeignKey(p => p.StatusId);
-
-
+           
             modelBuilder.Entity<Amostra>()
                 .HasOne(p => p.Status)
                 .WithMany(b => b.Amostras)
@@ -31,6 +25,5 @@ namespace AppAmostras.Data
                 .IsRequired()
                 .HasForeignKey(p => p.StatusId);
         }
-
     }
 }
