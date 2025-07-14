@@ -1,7 +1,4 @@
-# Aplicativo de Amostras Blazor 8
-# API de Amostras .Net 8 + 
-# Aplicativo de Testes
-
+# Aplicativo de Amostras Blazor 8 + API de Amostras .Net 8 + Aplicativo de Testes
 
 ### RECURSOS
 + DTOs
